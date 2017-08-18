@@ -1,0 +1,166 @@
+		
+		<div class = 'col-md-12'>
+			<fieldset class="scheduler-border">
+				<legend class="scheduler-border">FORMULARIO DE REPORTES</legend>
+				<div class = 'row' >
+					<div class = 'col-md-3' >
+						<br/><br/>
+						<input type = 'date' data-date="" data-date-format="YYYY MMMM DD" id = 'fecha_desde' class = 'form-control fechas' placeholder = 'DESDE' />
+					</div>
+					<div class = 'col-md-3' >
+						<br/><br/>
+						<input type = 'date' data-date="" data-date-format="YYYY MMMM DD" id = 'fecha_hasta' class = 'form-control fechas' placeholder = 'HASTA'/>
+					</div>
+					<div class = 'col-md-3' >
+						<br/><br/>
+						<select class="form-control empresa_combo" id="empresa" aria-describedby="basic-addon3">
+					
+						</select>
+					</div>
+					<div class = 'col-md-3' >
+						<br/><br/>
+						<button type="button" class="btn btn-default" onclick = 'verReporte()'>FILTRAR</button>
+					</div>
+				</div><br><br>
+				<div class = 'row' >
+					<div class = 'col-md-12' id = 'recibeReporte' ></div>
+				</div>
+			</fieldset>
+		</div>
+		<script>
+			function verReporte(){
+				var fecha_desde = $('#fecha_desde').val();
+				var fecha_hasta = $('#fecha_hasta').val();
+				var empresa = $('#empresa').val();
+				
+				if(fecha_desde == ''){
+					alert('seleccione una fecha de inicio');
+				}
+				
+				if(fecha_hasta == ''){
+					alert('seleccione una fecha de fin');
+				}
+				
+				if(fecha_desde == '' || fecha_hasta == ''){
+					
+				}else{
+					//alert(fecha_desde + ' <<>> ' + fecha_hasta)
+					var db = window.openDatabase("Database", "1.0", "TicketMobile", 200000);
+					db.transaction(function(tx){
+						tx.executeSql('SELECT up.fecha as feconsumo , c.nombre as nom, c.apellido as ape , m.nombre as plato , m.precio as pre , up.cantidad as cuantos FROM usu_pedido as up ,  cliente as c , empresa as e , menu as m WHERE up.fecha >= ? and up.fecha <= ? and e.id = ? and up.id_cli = c.id and c.id_emp = e.id and up.id_pro = m.id;',[fecha_desde , fecha_hasta,empresa],function(tx,results){
+							var registro = results.rows.length;
+							var datos = '';
+							var tr = '';
+							tr += '<button onclick = "enviaExcel()" type="button" class="btn btn-success" style = "float:right;" >Enviar Excel</button><br><br>';
+							tr += '	<table class = "table table-bordered">\
+										<tr>\
+											<th>\
+												CLIENTE\
+											</th>\
+											<th>\
+												FECHA\
+											</th>\
+											<th>\
+												CONSUMO\
+											</th>\
+											<th>\
+												PRECIO\
+											</th>\
+											<th>\
+												CANTIDAD\
+											</th>\
+											<th>\
+												TOTAL\
+											</th>\
+										</tr>';
+							var totGlobal = 0;
+							for(var j = 0; j < registro; j++){
+								var row1 = results.rows.item(j);
+								var nom = row1.nom;
+								var feconsumo = row1.feconsumo;
+								var ape = row1.ape;
+								var plato = row1.plato;
+								var pre = row1.pre;
+								var cuantos = row1.cuantos;
+								var total = (pre * cuantos);
+								totGlobal = (totGlobal + total);
+								tr += '	<tr>\
+											<td>'+ape+' '+nom+'</td>\
+											<td>'+feconsumo+'</td>\
+											<td>'+plato+'</td>\
+											<td>USD $ '+pre+'</td>\
+											<td>'+cuantos+'</td>\
+											<td>USD $ '+(total)+'</td>\
+										</tr>';
+							}
+							tr += '<tr><td colspan = "5" style = "text-align:right;"> TOTAL</td><td style ="color:red;font-size:25;">USD $ '+totGlobal+'</td></tr>';
+							tr += '</table>';
+							$('#recibeReporte').html(tr);
+							
+						},errorCB,successCB);
+					});
+				}
+			}
+			function enviaExcel(){
+				var fecha_desde = $('#fecha_desde').val();
+				var fecha_hasta = $('#fecha_hasta').val();
+				var empresa = $('#empresa').val();
+				
+				<!-- alert(fecha_desde + ' <<>> ' + fecha_hasta + ' >> << ' + empresa); -->
+				var db = window.openDatabase("Database", "1.0", "TicketMobile", 200000);
+				db.transaction(function(tx){
+					tx.executeSql('SELECT up.fecha as feconsumo , c.nombre as nom, c.apellido as ape , m.nombre as plato , m.precio as pre , up.cantidad as cuantos FROM usu_pedido as up ,  cliente as c , empresa as e , menu as m WHERE up.fecha >= ? and up.fecha <= ? and e.id = ? and up.id_cli = c.id and c.id_emp = e.id and up.id_pro = m.id;',[fecha_desde , fecha_hasta,empresa],function(tx,results){
+						var registro = results.rows.length;
+						var datos = '';
+						var totGlobal = 0;
+						var datos = '';
+						for(var j = 0; j < registro; j++){
+							var row1 = results.rows.item(j);
+							var nom = row1.nom;
+							var feconsumo = row1.feconsumo;
+							var ape = row1.ape;
+							var plato = row1.plato;
+							var pre = row1.pre;
+							var cuantos = row1.cuantos;
+							var total = (pre * cuantos);
+							totGlobal = (totGlobal + total);
+							datos += nom +'|'+ ape +'|'+ feconsumo +'|'+ plato +'|'+ pre +'|'+ cuantos +'|'+ totGlobal +'|'+'@';
+						}
+						var valores = datos.substring(0,datos.length -1);
+						$.ajax({
+							method: "POST",
+							url: "http://ticketfacil.ec/ticket2/appticket/excel.php",
+							data: { datos : "" + valores + "" }
+						}).done(function( msg ) {
+							alert( "Data Saved: " + msg );
+						});
+						alert(datos);
+					},errorCB,successCB);
+				});
+			}
+			ver_empresas_combo();
+			function ver_empresas_combo(){
+				var db = window.openDatabase("Database", "1.0", "TicketMobile", 200000);
+				db.transaction(function(tx){
+					tx.executeSql('SELECT * from empresa',[],function(tx,results){
+						var registro = results.rows.length;
+						//alert(registro);
+						var datos = '';
+						var tr = '';
+						
+						for(var j = 0; j < registro; j++){
+							var row1 = results.rows.item(j);
+							var nombre = row1.nombre;
+							var id = row1.id;
+							//alert('<<>>'+ nombreL);
+							tr += '<option value = "'+id+'" >'+nombre+'</option>';
+							//alert(tr);
+							
+						}
+						$('.empresa_combo').html(tr);
+						
+					},errorCB,successCB);
+				});
+				
+			}
+		</script>

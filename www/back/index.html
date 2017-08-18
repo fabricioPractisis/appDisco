@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>admin</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <script src="../js/jquery.js"></script>
+<script src="../js/index.js"></script>
+<script src="../js/jquery-ui.min.js"></script>
+<script src="../js/bootstrap.js"></script>
+<script src="../js/bootstrap.min.js"></script>
+<link rel="stylesheet" type="text/css" href="../css/bootstrap.css" /> 
+<link rel="stylesheet" type="text/css" href="../css/bootstrap-theme.css" />
+
+  <style>
+    /* Remove the navbar's default margin-bottom and rounded borders */ 
+    .navbar {
+      margin-bottom: 0;
+      border-radius: 0;
+    }
+    
+    /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+    .row.content {height: 450px}
+    
+    /* Set gray background color and 100% height */
+    .sidenav {
+      padding-top: 20px;
+      background-color: #f1f1f1;
+      height: 100%;
+    }
+    
+    /* Set black background color, white text and some padding */
+    footer {
+      background-color: #555;
+      color: white;
+      padding: 15px;
+    }
+    
+    /* On small screens, set height to 'auto' for sidenav and grid */
+    @media screen and (max-width: 767px) {
+      .sidenav {
+        height: auto;
+        padding: 15px;
+      }
+      .row.content {height:auto;} 127.0.0.1/control/www/
+    }
+	.empre:hover{
+		background-color:blue;
+		cursor:pointer;
+		color:#fff;
+	}
+	
+	fieldset.scheduler-border {
+		border: 1px groove #ccc !important;
+		padding: 0 1.4em 1.4em 1.4em !important;
+		margin: 0 0 1.5em 0 !important;
+		-webkit-box-shadow:  0px 0px 0px 0px #000;
+				box-shadow:  0px 0px 0px 0px #000;
+	}
+
+    legend.scheduler-border {
+        font-size: 1.2em !important;
+        font-weight: bold !important;
+        text-align: left !important;
+        width:auto;
+        padding:0 10px;
+        border-bottom:none;
+    }
+  </style>
+	<script>
+		onDeviceReady();
+		function onDeviceReady(){
+			var db = window.openDatabase("Database", "1.0", "TicketMobile", 200000);
+			db.transaction(iniciaDB, errorCB, successCB);
+			console.log(db);
+		}
+
+		function iniciaDB(tx){
+			var db = window.openDatabase("Database", "1.0", "TicketMobile", 200000);
+			<!-- //tx.executeSql('DROP TABLE IF EXISTS Boleto'); -->
+			<!-- tx.executeSql('CREATE TABLE IF NOT EXISTS empresa (id integer primary key AUTOINCREMENT,id_emp integer UNIQUE, nombre text, ruc text, dir text, tel integer,rep text)'); -->
+			<!-- // // tx.executeSql('DROP TABLE IF EXISTS Ingreso'); -->
+			<!-- // tx.executeSql('CREATE TABLE IF NOT EXISTS Ingreso (id integer primary key AUTOINCREMENT,idBoleto integer, strQr text, strBarcode text, idCli interger, idCon integer,idLocB integer,nombreHISB text,documentoHISB text,strEstado text)'); -->
+			<!-- //tx.executeSql('DROP TABLE IF EXISTS menu'); -->
+			<!-- tx.executeSql('CREATE TABLE IF NOT EXISTS cliente (id integer primary key AUTOINCREMENT, id_emp text , nombre text, apellido text, email text, codigo text,cedula text,estado text)'); -->
+			<!-- tx.executeSql('CREATE TABLE IF NOT EXISTS menu (id integer primary key AUTOINCREMENT,nombre text,precio float, desc text, est text)'); -->
+			<!-- // tx.executeSql('CREATE TABLE IF NOT EXISTS concieto (id integer primary key AUTOINCREMENT,id_con integer , nombre_c text)'); -->
+			<!-- // tx.executeSql('CREATE TABLE IF NOT EXISTS localidad (id integer primary key AUTOINCREMENT,id_con integer,id_loc integer , nombre text)'); -->
+			
+			
+		}
+
+		function errorCB(err){
+			//alert("Error processing SQL: "+err.message);
+		}
+
+		function successCB() {
+			//alert("success!");
+		}
+		ver_empresas();
+		function ver_empresas(){
+			var db = window.openDatabase("Database", "1.0", "TicketMobile", 200000);
+			db.transaction(function(tx){
+				tx.executeSql('SELECT * from categoria',[],function(tx,results){
+					var registro = results.rows.length;
+					//alert(registro);
+					var datos = '';
+					var tr = '';
+					tr += '<li class="list-group-item">CATEGORIAS<span class="badge"></span></li>';
+					for(var j = 0; j < registro; j++){
+						var row1 = results.rows.item(j);
+						var nombre = row1.nombre;
+						var id = row1.id;
+						//alert('<<>>'+ nombreL);
+						tr += '<li style = "text-align:left !important;" class="list-group-item empre" onclick = "verDetalleEmpresa('+id+')" >'+nombre+'<span class="badge"></span></li>';
+						//alert(tr);
+						
+					}
+					$('#empresas').html(tr);
+					
+				},errorCB,successCB);
+			});
+			
+		}
+		
+		
+		function ver_clientes(){
+			$('#contieneEmpresa').fadeIn('slow');
+			var db = window.openDatabase("Database", "1.0", "TicketMobile", 200000);
+			db.transaction(function(tx){
+				tx.executeSql('SELECT * from producto order by nombre asc',[],function(tx,results){
+					var registro = results.rows.length;
+					//alert(registro);
+					var datos = '';
+					var tr = '';
+					tr += '<li class="list-group-item">PRODUCTOS<span class="badge"></span></li>';
+					for(var j = 0; j < registro; j++){
+						var row1 = results.rows.item(j);
+						var nombre = row1.nombre;
+						var apellido = row1.apellido;
+						var id = row1.id;
+						//alert('<<>>'+ nombreL);
+						tr += '<li style = "text-align:left;" class="list-group-item empre" onclick = "verDetalleEmpleado('+id+')" >'+nombre+' <span class="badge"></span></li>';
+						//alert(tr);
+						
+					}
+					$('#clientes').html(tr);
+					
+				},errorCB,successCB);
+			});
+			
+		}
+		
+		
+		function verDetalleEmpresa(id){
+			var db = window.openDatabase("Database", "1.0", "TicketMobile", 200000);
+			db.transaction(function(tx){
+				tx.executeSql('SELECT * FROM categoria WHERE id = ?;',[id],function(tx,results){
+					var registro = results.rows.length;
+					
+					for(var j = 0; j < registro; j++){
+						var row1 = results.rows.item(j);
+						var nombre = row1.nombre;
+						
+						
+						$('#nombre').val(nombre);
+						
+						$('#rep').val(rep);
+					}
+					
+					$('#botones').html('<button type="button" class="btn btn-success" onclick = "actualizaEmpresa('+id+')" >Actualizar</button><br/><br/><button type="button" class="btn btn-warning" onclick = "volver()" >VOLVER</button>');
+					
+				},errorCB,successCB);
+			});
+		}
+		
+		function verDetalleEmpleado(id){
+			//$('#contieneEmpresa').css('display','none');
+			var db = window.openDatabase("Database", "1.0", "TicketMobile", 200000);
+			db.transaction(function(tx){
+				tx.executeSql('SELECT * FROM producto WHERE id = ?;',[id],function(tx,results){
+					var registro = results.rows.length;
+					
+					for(var j = 0; j < registro; j++){
+						var row1 = results.rows.item(j);
+						var nombre = row1.nombre;
+						var precio = row1.precio;
+						var id_emp = row1.id_cat;
+						
+						db.transaction(function(tx){
+							tx.executeSql('SELECT * FROM categoria WHERE id = ?;',[id_emp],function(tx,resulta){
+								var registroE = resulta.rows.length;
+								for(var k = 0; k < registroE; k++){
+									var rowE = resulta.rows.item(k);
+									var nombre_emp = rowE.nombre;
+									$('#txtEmpresa').html(nombre_emp);
+									$('.txtEmpresa').html('Empresa : ' +nombre_emp);
+								}
+							},errorCB,successCB);
+						});
+						
+						
+						db.transaction(function(tx){
+							tx.executeSql('SELECT * FROM categoria;',[],function(tx,results){
+								var registro = results.rows.length;
+								
+								var tr = '';
+								var selected = '';
+								tr += '<option value = "0" >Seleccione...</option>';
+								for(var j = 0; j < registro; j++){
+									var row1 = results.rows.item(j);
+									var nombre = row1.nombre;
+									var id = row1.id;
+									//alert('<<>>'+ nombreL);
+									if(id_emp == id){
+										selected = 'selected';
+									}else{
+										selected = '';
+									}
+									tr += '<option value = "'+id+'" '+selected+'>'+nombre+'</option>';
+									//alert(tr);
+									
+								}
+								$('.empresa_combo').html(tr);
+							},errorCB,successCB);
+						});
+						
+						
+						
+						$('#nombre').val(nombre);
+						$('#apellido').val(precio);
+						
+					}
+					
+					$('#botones').html('<button type="button" class="btn btn-success" onclick = "actualizaCliente('+id+')" >Actualizar</button><br/><br/><button type="button" class="btn btn-warning" onclick = "cargaContenido(2)" >VOLVER</button>');
+					
+				},errorCB,successCB);
+			});
+		}
+		
+		function volver(){
+			window.location='';
+		}
+		
+		function actualizaCliente(id){
+			var nombre = $('#nombre').val();
+			var precio = $('#apellido').val();
+			
+			var categoria = $('#empresa').val();
+			
+			var db = window.openDatabase("Database", "1.0", "TicketMobile", 200000);
+			db.transaction(function(tx){
+				tx.executeSql('UPDATE producto SET id_cat = ? , nombre = ? , precio = ?  WHERE id = ?;',[categoria,nombre,precio,id],function(tx,results){
+					alert('el  producto : ' + nombre + ' a sido actualizado con éxito');
+					cargaContenido(2);
+				});
+			},errorCB,successCB);
+			
+		}
+		
+		function actualizaEmpresa(id){
+			var nombre = $('#nombre').val();
+			
+			
+			var db = window.openDatabase("Database", "1.0", "TicketMobile", 200000);
+			db.transaction(function(tx){
+				tx.executeSql('UPDATE categoria SET nombre = ? WHERE id = ?;',[nombre,id],function(tx,results){
+					alert('la categoria : ' + nombre + ' a sido actualizada con éxito');
+					window.location = '';
+				});
+			},errorCB,successCB);
+			
+		}
+		function grabar_cliente(){
+		<!-- alert('hola') -->
+			var nombre = $('#nombre').val();
+			var apellido = $('#apellido').val();
+			
+			var id_emp = $('#categoria').val();
+			
+			
+			
+			if(nombre == ''){
+				alert('Debe ingresar un nombre');
+			}
+			
+			if(apellido == ''){
+				alert('Debe ingresar un precio');
+			}
+			
+			
+			
+			if(nombre == '' || apellido == ''){
+				
+			}else{
+				var estado = 1;
+				var db = window.openDatabase("Database", "1.0", "TicketMobile", 200000);
+				db.transaction(function(tx){
+					tx.executeSql('SELECT * FROM producto WHERE nombre = ? ;',[nombre],function(tx,results){
+						var registro = results.rows.length;
+						<!-- alert(registro); -->
+						if(registro > 0){
+							alert('el producto : ' + nombre + ' ya a sido creado por favor cambielo !!!');
+						}else{
+							<!-- alert('INSERT INTO producto (id_cat , nombre , estado , precio) values ('+id_emp+','+nombre+','+estado+','+apellido+');'); -->
+							db.transaction(function(tx){
+								tx.executeSql('INSERT INTO producto (id_cat , nombre , estado , precio) values ('+id_emp+',"'+nombre+'",'+estado+','+apellido+');',[],function(tx,results){
+									alert('el producto : ' + nombre + '  a sido creado con éxito');
+									cargaContenido(2);
+								});
+							},errorCB,successCB);
+						}
+					},errorCB,successCB);
+				});
+			}		
+		}
+		
+		function grabar(){
+			var nombre = $('#nombre').val();
+			<!-- var ruc = $('#ruc').val(); -->
+			<!-- var dir = $('#dir').val(); -->
+			<!-- var tel = $('#tel').val(); -->
+			<!-- var rep = $('#rep').val(); -->
+			
+			if(nombre == ''){
+				alert('Debe ingresar un nombre');
+			}
+			
+			<!-- if(ruc == ''){ -->
+				<!-- alert('Debe ingresar un ruc'); -->
+			<!-- } -->
+			
+			<!-- if(dir == ''){ -->
+				<!-- alert('Debe ingresar una direccion'); -->
+			<!-- } -->
+			
+			<!-- if(tel == ''){ -->
+				<!-- alert('Debe ingresar un telefono'); -->
+			<!-- } -->
+			
+			<!-- if(rep == ''){ -->
+				<!-- alert('Debe ingresar un representante'); -->
+			<!-- } -->
+			<!-- || ruc == '' || dir == '' || tel == '' || rep == '' -->
+			if(nombre == '' ){
+				
+			}else{
+				var estado = 1;
+				var db = window.openDatabase("Database", "1.0", "TicketMobile", 200000);
+				db.transaction(function(tx){
+					tx.executeSql('insert into categoria (nombre , estado) values (?,?);',[nombre,estado],function(tx,results){
+						alert('la categoria : ' + nombre + ' a sido creada con éxito');
+						window.location = '';
+					});
+				},errorCB,successCB);
+
+			}		
+		}
+		
+		
+		function grabar_menu(){
+			var nombre = $('#nombre').val();
+			var precio = $('#precio').val();
+			var desc = $('#desc').val();
+			var est = $('#est').val();
+			
+			if(nombre == ''){
+				alert('Debe ingresar un nombre');
+			}
+			
+			if(precio == ''){
+				alert('Debe ingresar un precio');
+			}
+			
+			if(desc == ''){
+				alert('Debe ingresar una descripcion');
+			}
+			
+			if(est == ''){
+				alert('Debe ingresar un estado');
+			}
+			
+			
+			if(nombre == '' || precio == '' || desc == '' || est == ''){
+				
+			}else{
+				var db = window.openDatabase("Database", "1.0", "TicketMobile", 200000);
+				db.transaction(function(tx){
+					tx.executeSql('insert into menu (nombre , precio , desc , est) values (?,?,?,?);',[nombre,precio,desc,est],function(tx,results){
+						alert('el producto : ' + nombre + ' a sido creado con éxito');
+						cargaContenido(3)
+					});
+				},errorCB,successCB);
+
+			}		
+		}
+		
+		
+		function ver_menu(){
+			var db = window.openDatabase("Database", "1.0", "TicketMobile", 200000);
+			db.transaction(function(tx){
+				tx.executeSql('SELECT * from mesa order by nombre asc',[],function(tx,results){
+					var registro = results.rows.length;
+					//alert(registro);
+					var datos = '';
+					var tr = '';
+					tr += '<li class="list-group-item">MESA<span class="badge"></span></li>';
+					for(var j = 0; j < registro; j++){
+						var row1 = results.rows.item(j);
+						var nombre = row1.nombre;
+						var id = row1.id;
+						//alert('<<>>'+ nombreL);
+						tr += '<li class="list-group-item empre" onclick = "verDetalleMenu('+id+')" > '+nombre+' <span class="badge"></span></li>';
+						//alert(tr);
+						
+					}
+					$('#menu').html(tr);
+					
+				},errorCB,successCB);
+			});
+		}
+		
+		
+		function verDetalleMenu(id){
+			var db = window.openDatabase("Database", "1.0", "TicketMobile", 200000);
+			db.transaction(function(tx){
+				tx.executeSql('SELECT * FROM mesa WHERE id = ?;',[id],function(tx,results){
+					var registro = results.rows.length;
+					
+					for(var j = 0; j < registro; j++){
+						var row1 = results.rows.item(j);
+						var nombre = row1.nombre;
+						
+						$('#nombre').val(nombre);
+						
+					}
+					
+					$('#botones').html('<button type="button" class="btn btn-success" onclick = "actualizaMenu('+id+')" >Actualizar</button><br/><br/><button type="button" class="btn btn-warning" onclick = "cargaContenido(3)" >VOLVER</button>');
+					
+				},errorCB,successCB);
+			});
+		}
+		
+		function actualizaMenu(id){
+			var nombre = $('#nombre').val();
+			
+			
+			var db = window.openDatabase("Database", "1.0", "TicketMobile", 200000);
+			db.transaction(function(tx){
+				tx.executeSql('UPDATE mesa SET nombre = ? WHERE id = ?;',[nombre,id],function(tx,results){
+					alert('la mesa : ' + nombre + ' a sido actualizada con éxito');
+					cargaContenido(3);
+				});
+			},errorCB,successCB);
+		}
+		
+		function cargaContenido(id){
+			var ruta = '';
+			if(id == 1){
+				window.location = '';
+			}if(id == 2){
+				ruta='subpages/clientes.html';
+			}if(id == 3){
+				ruta='subpages/menu.html';
+			}if(id == 4){
+				ruta='subpages/reporte.html';
+			}
+			
+			$.post(ruta,{ }).done(function(data){
+				$('#cargaContenido').html(data);
+			});
+		}
+		
+		
+		
+	</script>
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	
+</head>
+<body>
+	<nav class="navbar navbar-inverse">
+		<div class="container-fluid">
+			<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>                        
+				</button>
+				<a class="navbar-brand" href="javascript:void(0);" style = 'padding:0;'>
+					<img class="l-color" src="../images/logo.png" style="width:60px">
+				</a>
+			</div>
+			<div class="collapse navbar-collapse" id="myNavbar">
+				<ul class="nav navbar-nav">
+					<li class="active" onclick = 'cargaContenido(1)'><a href="javascript:void(0);">CATEGORIAS</a></li>
+					<li onclick = 'cargaContenido(2)'><a href="javascript:void(0);">PRODUCTOS </a></li>
+					<li onclick = 'cargaContenido(3)'><a href="javascript:void(0);">MESAS</a></li>
+					
+					
+					<!--<li onclick = 'cargaContenido(4)'><a href="javascript:void(0);">REPORTES</a></li>-->
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="../index.html"><span class="glyphicon glyphicon-log-in"></span> SALIR</a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+  
+	<div class="container-fluid text-center">    
+		<div class="row content" style = 'height:1000px;' ><br><br>
+			<div class="col-md-1"> </div>
+			<div class="col-md-10"> 
+				<div class = 'row' id = 'cargaContenido'>
+					<div class = 'col-md-4'>
+						<ul class="list-group" id = 'empresas'>
+						</ul> 
+					</div>
+					<div class = 'col-md-8'>
+						<fieldset class="scheduler-border">
+							<legend class="scheduler-border">FORMULARIO DE CATEGORIA</legend>
+							<div class="input-group">
+							  <span class="input-group-addon" id="basic-addon3">NOMBRE</span>
+							  <input type="text" class="form-control" id="nombre" aria-describedby="basic-addon3">
+							</div><br>
+							<div style = 'display:none;'>
+								<div class="input-group">
+								  <span class="input-group-addon" id="basic-addon3">RUC</span>
+								  <input type="text" value = '' class="form-control" id="ruc" aria-describedby="basic-addon3">
+								</div><br>
+								
+								<div class="input-group">
+								  <span class="input-group-addon" id="basic-addon3">DIRECCIÓN</span>
+								  <input type="text" class="form-control" id="dir" aria-describedby="basic-addon3">
+								</div><br>
+								
+								<div class="input-group">
+								  <span class="input-group-addon" id="basic-addon3">TELEFONO</span>
+								  <input type="text" class="form-control" id="tel" aria-describedby="basic-addon3">
+								</div><br>
+								
+								<div class="input-group">
+								  <span class="input-group-addon" id="basic-addon3">REPRESENTANTE</span>
+								  <input type="text" class="form-control" id="rep" aria-describedby="basic-addon3">
+								</div>
+							</div>	
+								<br>
+								<div style = 'text-align:center;margin:0 auto;' id = 'botones'>
+									<button type="button" class="btn btn-primary" onclick = 'grabar();' >GRABAR</button>
+								</div>
+							
+						</fieldset>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-1"> </div>
+		</div>
+	</div>
+
+<footer class="container-fluid text-center">
+  <p>TODOS LOS DERECHOS RESERVADOS <br><i style = 'color:#1D9D74;'>Fabricio Carrión</i></p>
+</footer>
+
+</body>
+</html>

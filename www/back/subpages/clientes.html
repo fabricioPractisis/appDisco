@@ -1,0 +1,59 @@
+		<div class = 'col-md-4'>
+			<ul class="list-group" id = 'clientes'>
+			</ul> 
+		</div>
+		<div class = 'col-md-8'>
+			<fieldset class="scheduler-border">
+				<legend class="scheduler-border">FORMULARIO DE PRODUCTOS</legend>
+				<!-- <label id = 'txtEmpresa'></label> -->
+				<div class="input-group " id = 'contieneEmpresa'>
+				  <span class="input-group-addon txtEmpresa" id="basic-addon3">PRODUCTO </span>
+				  <select class="form-control empresa_combo" id="categoria" aria-describedby="basic-addon3">
+					
+				  </select>
+				</div><br>
+				
+				<div class="input-group">
+				  <span class="input-group-addon" id="basic-addon3">NOMBRE</span>
+				  <input type="text" class="form-control" id="nombre" aria-describedby="basic-addon3">
+				</div><br>
+				
+				<div class="input-group">
+				  <span class="input-group-addon" id="basic-addon3">PRECIO</span>
+				  <input type="number" class="form-control" id="apellido" aria-describedby="basic-addon3">
+				</div><br>
+				
+				<br>
+				<div style = 'text-align:center;margin:0 auto;' id = 'botones'>
+					<button type="button" class="btn btn-primary" onclick = 'grabar_cliente();' >GRABAR</button>
+				</div>
+			</fieldset>
+		</div>
+		<script>
+			ver_clientes();
+			ver_empresas_combo();
+			function ver_empresas_combo(){
+				var db = window.openDatabase("Database", "1.0", "TicketMobile", 200000);
+				db.transaction(function(tx){
+					tx.executeSql('SELECT * from categoria',[],function(tx,results){
+						var registro = results.rows.length;
+						//alert(registro);
+						var datos = '';
+						var tr = '';
+						tr += '<option value = "0" >Seleccione...</option>';
+						for(var j = 0; j < registro; j++){
+							var row1 = results.rows.item(j);
+							var nombre = row1.nombre;
+							var id = row1.id;
+							//alert('<<>>'+ nombreL);
+							tr += '<option value = "'+id+'" >'+nombre+'</option>';
+							//alert(tr);
+							
+						}
+						$('.empresa_combo').html(tr);
+						
+					},errorCB,successCB);
+				});
+				
+			}
+		</script>
