@@ -130,28 +130,40 @@
 							var precio = row1.precio;
 							var id_p = row1.id;
 							//alert('<<>>'+ nombreL);
-							tr 	+= '<a style = "padding-left:10px;" href="javascript:void(0);" class="sina">\
-										<div class="boton-gris" id="sel13">\
-											<table width = "100%">\
+							tr 	+= '<div style = "padding-left:10px;text-decoration:none" href="javascript:void(0);" class="sina">\
+										<div class="boton-gris" id="sel13" style ="padding:0px;" >\
+											<table width = "100%" >\
 												<tbody>\
 													<tr>\
-														<td width ="15%">\
-															<i onclick = "quitar('+id_p+')" class="fa fa-minus-square" aria-hidden="true" style = "cursor:pointer;"></i>\
+														<td width ="15%" style ="text-align:center;" >\
+															<i onclick = "quitar('+id_p+' , '+precio+')" class="fa fa-minus-square" aria-hidden="true" style = "cursor:pointer;color:red;"></i>\
 														</td>\
 														<td width ="55%" style ="text-align:center;font-size:12px;">\
-															'+nombre+'   /   [<span style = "color:#00a2d0;"> UDS $ '+precio+' </span>]<br>\
-															<center><input id_p = "'+id_p+'" name="menu_check[]" id="cantidadEnvio_'+id_p+'" value="0" class="form-control" type="text" style ="width:50px;text-align:center;"></center>\
-															<center><input id="nombreP_'+id_p+'" value="'+nombre+'" class="form-control" type="hidden" style ="width:150px;text-align:center;"></center>\
-															<center><input id="precioP_'+id_p+'" value="'+precio+'" class="form-control" type="hidden" style ="width:150px;text-align:center;"></center>\
+															<table width = "100%" align="center">\
+																<tr>\
+																	<td width="50%" style ="text-align:left;padding-left:5px;">\
+																		'+nombre+'   <br>\
+																		<span style = "color:#00a2d0;font-size:12px;" id = "precio_'+id_p+'" > UDS $ '+precio+' </span><br>\
+																	</td>\
+																	<td>\
+																		<center>\
+																			<span style = "color:#000;">Cantidad : </span><br>\
+																			<input id_p = "'+id_p+'" name="menu_check[]" id="cantidadEnvio_'+id_p+'" value="0" class="form-control" type="text" style ="width:80px;text-align:center;background-color:#f6f6f6;border:none;font-size:30px;height:50px;" disabled readonly>\
+																		</center>\
+																		<center><input id="nombreP_'+id_p+'" value="'+nombre+'" class="form-control" type="hidden" style ="width:150px;text-align:center;"></center>\
+																		<center><input id="precioP_'+id_p+'" value="'+precio+'" class="form-control" type="hidden" style ="width:150px;text-align:center;"></center>\
+																	</td>\
+																</tr>\
+															</table>\
 														</td>\
-														<td width ="15%">\
-															<i onclick = "agregar('+id_p+')" class="fa fa-plus-circle" aria-hidden="true" style = "cursor:pointer;"></i>\
+														<td width ="15%" style ="text-align:center;">\
+															<i onclick = "agregar('+id_p+' , '+precio+')" class="fa fa-plus-circle" aria-hidden="true" style = "cursor:pointer;color:#1D9C73;"></i>\
 														</td>\
 													</tr>\
 												</tbody>\
 											</table>\
 										</div>\
-									</a>\
+									</div>\
 									';
 							//alert(tr);
 							
@@ -159,13 +171,13 @@
 						tr 	+= '<a style = "padding-left:10px;" href="javascript:void(0);" class="sina">\
 									<div class="boton-gris" id="sel13">\
 										<center>\
-											<button id = "botonFin" type="button" class="btn btn-default" onclick = "grabarPedido()">HACER PEDIDO</button><br>\
+											<button id = "botonFin" type="button" class="btn btn-default" onclick = "grabarPedido()">AGREGAR PEDIDO</button><br>\
 											<label id = "load"></label>\
 										</center>\
 									</div>\
 								</a>\
 							</div>\
-							<div id= "mensajeCargados" style = "display:none;width:100%;height:300px;background-color:#00a2d0;">\
+							<div id= "mensajeCargados" style = "display:none;width:100%;height:300px;background-color:#fff;">\
 								hola\
 							</div>\
 							';
@@ -267,12 +279,17 @@
 				$('#mensajeCargados').fadeIn('slow');
 				$('#mensajeCargados').html('\
 									<table style = "width:100%;height:100%;">\
+										<tr><td><center>Gracias!! su pedido a sido procesado con èxito</center></td></tr>\
 										<tr>\
 											<td style = "width:50%;text-align:center;">\
-												<button id = "botonFin2" type="button" class="btn btn-default" onclick = "continua(3);" >SEGUIR COMPRANDO</button><br>\
+												<i class="fa fa-book fa-5x botones_pedido" aria-hidden="true" id = "sombra1" onclick = "continua(4);"></i><br>\
+												<span>VER MI PEDIDO</span></a>\
 											</td>\
+										</tr>\
+										<tr>\
 											<td style = "width:50%;text-align:center;">\
-												<button id = "botonFin2" type="button" class="btn btn-default" onclick = "continua(4);" >IR AL CART</button><br>\
+												<i class="fa fa-shopping-cart fa-5x botones_pedido" aria-hidden="true" id = "sombra2" onclick = "continua(3);"></i><br>\
+												<span>SEGUIR COMPRANDO </span>\
 											</td>\
 										</tr>\
 									</table>\
@@ -333,7 +350,7 @@
 										<button id = "botonFin2" type="button" class="btn btn-default botonFin2" onclick = "continua(3);" >SEGUIR COMPRANDO</button><br>\
 									</td>\
 									<td style = "width:50%;text-align:center;">\
-										<button id = "botonFin2" type="button" class="btn btn-default botonFin2" onclick = "grabarComanda()">TERMINAR</button><br>\
+										<button id = "botonFin2" type="button" class="btn btn-default botonFin2" onclick = "grabarComanda()">ENVIAR PEDIDO</button><br>\
 									</td>\
 								</tr>\
 							</table>\
@@ -450,15 +467,25 @@
 	}
 	
 	
-	function agregar(id){
+	function agregar(id , precio){
 		$('#cantidadEnvio_'+id).val(parseInt($('#cantidadEnvio_'+id).val()) + 1);
+		var cantidadEnvio_ = $('#cantidadEnvio_'+id).val();
+		var precio_ = (parseFloat(cantidadEnvio_) * parseFloat(precio)).toFixed(2);
+		$('#precio_'+id).html(' UDS $ ' + precio_);
 	}
-	function quitar(id){
+	function quitar(id , precio){
 		if ($('#cantidadEnvio_'+id).val() != 0);
 		$('#cantidadEnvio_'+id).val(parseInt($('#cantidadEnvio_'+id).val()) - 1);
-		if ($('#cantidadEnvio_'+id).val() < 0){
+		if ($('#cantidadEnvio_'+id).val() <= 0){
 			$('#cantidadEnvio_'+id).val(0);
+			$('#precio_'+id).html(' UDS $ ' + precio);
+		}else{
+			var cantidadEnvio_ = $('#cantidadEnvio_'+id).val();
+			var precio_ = (parseFloat(cantidadEnvio_) * parseFloat(precio)).toFixed(2);
+			$('#precio_'+id).html(' UDS $ ' + precio_);
 		}
+		
+		
 	}
 	 
 	function verProducto(id){
