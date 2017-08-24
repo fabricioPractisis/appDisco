@@ -462,8 +462,8 @@
 							</div>
 							<div style = 'font-family:corbel;display:none;width:100%;height:100%;background-color:#00AEEF;padding:20%;text-align:center;' id = 'contieneMensajeFinal' >
 								<h1 id = 'mensajeFinal' style = 'display:none;padding-top:30px;margin:0px;padding-bottom:30px;padding-left:30px;padding-right:30px;background-color:#000;color:#fff;font-size:1em;text-align:center;' >
-									GRACIAS POR USAR NUESTRO SERVICIO<br>
-									SU # DE COMPRA ES <br>
+									<br>
+									GRACIAS SU # DE COMPRA ES <br>
 									<span id = 'numero_de_orden' style = 'font-size:50px;font-weight:bolder;font-family:corbel;' ></span>
 								</h1>
 							</div>
@@ -560,7 +560,7 @@
 							
 							//alert('<<>>'+ nombreL);
 							tr += '	<li class="list-group-item cadaFactura" onclick = "verReporte('+id+')" >\
-										USD$ : '+valor+' => ['+fecha+'] <span class="badge"></span>\
+										Orden # : ' + id + '  USD$ : '+valor+' Fecha : '+fecha+' <span class="badge"></span>\
 									</li>\
 									<div id = "recibeDetalleFactura_'+id+'" class = "facturas_realizadas" style = "display:none;"></div>\
 									';
@@ -665,6 +665,10 @@
 					setTimeout(function(){
 						$('#contieneVerPedido').fadeIn('slow')
 					}, 500);
+					
+					$('#contieneMensajeFinal').fadeOut('slow');
+					$('#tablaConsumos').fadeIn('slow');
+					
 				}
 				
 				if(id == 3){
